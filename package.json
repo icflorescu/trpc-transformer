@@ -1,0 +1,50 @@
+{
+  "name": "trpc-transformer",
+  "version": "1.0.0",
+  "description": "Simple, quick and reliable transformer for tRPC based on superjson and devalue",
+  "repository": "icflorescu/trpc-transformer",
+  "bugs": {
+    "url": "https://github.com/icflorescu/trpc-transformer/issues"
+  },
+  "type": "module",
+  "source": "src/index.ts",
+  "exports": {
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "microbundle",
+    "dev": "microbundle watch",
+    "test": "tsc"
+  },
+  "keywords": [
+    "trpc",
+    "transformer",
+    "transform",
+    "superjson",
+    "devalue",
+    "eval",
+    "rpc"
+  ],
+  "author": {
+    "name": "Ionut-Cristian Florescu",
+    "email": "ionut.florescu@gmail.com",
+    "url": "https://github.com/icflorescu"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "devalue": "^2.0.1",
+    "superjson": "^1.8.1"
+  },
+  "devDependencies": {
+    "microbundle": "^0.14.2",
+    "typescript": "^4.5.5"
+  }
+}
