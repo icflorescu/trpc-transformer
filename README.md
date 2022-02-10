@@ -1,4 +1,4 @@
-# ✨ TRPC-Transformer
+# ✨ tRPC-transformer
 
 [![NPM version][npm-image]][npm-url]
 [![License][license-image]][license-url]
