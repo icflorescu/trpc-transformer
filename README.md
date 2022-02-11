@@ -9,13 +9,21 @@ A simple, quick and reliable transformer for [tRPC](https://trpc.io) based on:
 - [superjson](https://github.com/blitz-js/superjson) for uploading data;
 - eval/[devalue](https://github.com/Rich-Harris/devalue) for downloading data.
 
-## How to use
+## Installation
 
-1. Install
+```bash
+yarn add trpc-transformer
+```
 
-`yarn add trpc-transformer`
+or
 
-2. Add it to your `AppRouter`
+```bash
+npm i trpc-transformer
+```
+
+## Usage
+
+1. Add it to your `AppRouter`:
 
 ```ts
 import transformer from 'trpc-transformer';
@@ -24,7 +32,7 @@ const appRouter = trpc.router().transformer(transformer);
 // .query(...)
 ```
 
-3. Add it to your tRPC client:
+2. ...and to your tRPC client:
 
 ```ts
 import transformer from 'trpc-transformer';
@@ -33,6 +41,55 @@ const client = createTRPCClient<AppRouter>({
   // [...]
   transformer,
 });
+```
+
+## Benefits
+
+Assuming you have `appRouter.ts` on the server-side:
+
+```ts
+import * as trpc from '@trpc/server';
+import transformer from 'trpc-transformer';
+import * as yup from 'yup';
+import DB from '../lib/your-persistence-layer';
+
+export const appRouter = trpc
+  .router()
+  .transformer(transformer)
+  .mutation('createUser', {
+    input: yup
+      .object({
+        name: yup.string().min(5).required(),
+        birthDate: yup.date().required(),
+      })
+      .required(),
+    async resolve({ input: { name } }) {
+      const user: {
+        id: number;
+        name: string;
+        createdAt: Date;
+      } = await DB.users.create({ name });
+      return user;
+    },
+  });
+
+export type AppRouter = typeof appRouter;
+```
+
+...then, on the client you'll have your data **correctly** serialized/deserialized:
+
+```ts
+import * as trpc from '@trpc/client';
+import transformer from 'trpc-transformer';
+import type { Router } from '../appRouter.ts';
+
+const client = trpc.createTRPCClient<Router>({ url: '/trpc', transformer });
+// ...
+const user = await client.mutation('createUser', {
+  name: 'John Doe',
+  birthDate: new Date('1980-06-25'),
+});
+console.log(user.createdAt instanceof Date); // true
 ```
 
 ## Why this exists
@@ -54,7 +111,7 @@ const transformer = {
 
 ## Learn more
 
-See [trpc.io/docs/data-transformers](https://trpc.io/docs/data-transformers).
+See [trpc.io/docs/data-transformers](https://trpc.io/docs/data-transformers) and [github.com/blitz-js/superjson](https://github.com/blitz-js/superjson).
 
 ## License
 
