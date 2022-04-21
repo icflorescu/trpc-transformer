@@ -1,6 +1,6 @@
 {
   "name": "trpc-transformer",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Simple, quick and reliable transformer for tRPC based on superjson and devalue",
   "repository": "icflorescu/trpc-transformer",
   "bugs": {
@@ -41,7 +41,7 @@
   "license": "ISC",
   "dependencies": {
     "devalue": "^2.0.1",
-    "superjson": "^1.8.1"
+    "superjson": "^1.8.2"
   },
   "devDependencies": {
     "microbundle": "^0.14.2",
