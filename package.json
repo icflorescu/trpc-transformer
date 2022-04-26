@@ -41,7 +41,7 @@
   "license": "ISC",
   "dependencies": {
     "devalue": "^2.0.1",
-    "superjson": "^1.8.2"
+    "superjson": "^1.9.0"
   },
   "devDependencies": {
     "microbundle": "^0.14.2",
