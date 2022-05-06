@@ -1,6 +1,6 @@
 {
   "name": "trpc-transformer",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Simple, quick and reliable transformer for tRPC based on superjson and devalue",
   "repository": "icflorescu/trpc-transformer",
   "bugs": {
