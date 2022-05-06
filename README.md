@@ -89,23 +89,6 @@ const user = await client.mutation('createUser', {
 console.log(user.createdAt instanceof Date); // true
 ```
 
-## Why this exists
-
-So you don't have to do this every time:
-
-```ts
-import devalue from 'devalue';
-import superjson from 'superjson';
-
-const transformer = {
-  input: superjson,
-  output: {
-    serialize: (object: unknown) => devalue(object),
-    deserialize: (object: unknown) => eval(`(${object})`),
-  },
-};
-```
-
 ## Learn more
 
 See [trpc.io/docs/data-transformers](https://trpc.io/docs/data-transformers) and [github.com/blitz-js/superjson](https://github.com/blitz-js/superjson).
