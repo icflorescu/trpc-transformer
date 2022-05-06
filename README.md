@@ -4,10 +4,7 @@
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
 
-A simple, quick and reliable transformer for [tRPC](https://trpc.io) based on:
-
-- [superjson](https://github.com/blitz-js/superjson) for uploading data;
-- eval/[devalue](https://github.com/Rich-Harris/devalue) for downloading data.
+A simple [tRPC](https://trpc.io) transformer based on [superjson](https://github.com/blitz-js/superjson) with [Decimal.js](https://mikemcl.github.io/decimal.js/) support.
 
 ## Installation
 
