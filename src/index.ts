@@ -1,7 +1,7 @@
 import Decimal from 'decimal.js';
-import superjson from 'superjson';
+import { default as SuperJSON } from 'superjson';
 
-superjson.registerCustom<Decimal, string>(
+SuperJSON.registerCustom<Decimal, string>(
   {
     isApplicable: (v): v is Decimal => Decimal.isDecimal(v),
     serialize: (v) => v.toJSON(),
@@ -10,4 +10,4 @@ superjson.registerCustom<Decimal, string>(
   'decimal.js'
 );
 
-export default superjson;
+export default SuperJSON;
