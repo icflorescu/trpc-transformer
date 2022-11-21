@@ -1,13 +1,22 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "noEmit": true,
     "lib": ["esnext"],
-    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "composite": false,
+    "declaration": true,
+    "declarationMap": true,
+    "esModuleInterop": true,
+    "outDir": "dist",
     "forceConsistentCasingInFileNames": true,
-    "noUncheckedIndexedAccess": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
     "skipLibCheck": true,
-    "esModuleInterop": true
-  }
+    "strict": true
+  },
+  "include": ["src"]
 }
