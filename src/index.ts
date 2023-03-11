@@ -1,5 +1,5 @@
 import Decimal from 'decimal.js';
-import { default as SuperJSON } from 'superjson';
+import SuperJSON, { deserialize, parse, serialize, stringify } from 'superjson';
 
 SuperJSON.registerCustom<Decimal, string>(
   {
@@ -11,3 +11,4 @@ SuperJSON.registerCustom<Decimal, string>(
 );
 
 export default SuperJSON;
+export { serialize, deserialize, stringify, parse };
