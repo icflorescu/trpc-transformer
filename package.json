@@ -47,7 +47,7 @@
     "superjson": "^1.12.3"
   },
   "devDependencies": {
-    "esbuild": "^0.17.18",
+    "esbuild": "^0.17.19",
     "typescript": "^5.0.4"
   }
 }
