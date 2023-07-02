@@ -1,6 +1,6 @@
 {
   "name": "trpc-transformer",
-  "version": "2.3.6",
+  "version": "2.3.7",
   "description": "Simple tRPC transformer based on superjson with Decimal.js support",
   "repository": "icflorescu/trpc-transformer",
   "bugs": {
@@ -43,14 +43,14 @@
   "license": "ISC",
   "dependencies": {
     "decimal.js": "^10.4.3",
-    "superjson": "^1.12.3"
+    "superjson": "^1.12.4"
   },
   "peerDependencies": {
     "decimal.js": "^10.4.3",
-    "superjson": "^1.12.3"
+    "superjson": "^1.12.4"
   },
   "devDependencies": {
-    "esbuild": "^0.18.4",
-    "typescript": "^5.1.3"
+    "esbuild": "^0.18.11",
+    "typescript": "^5.1.6"
   }
 }
