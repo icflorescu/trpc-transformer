@@ -3,6 +3,7 @@
 [![NPM version][npm-image]][npm-url]
 [![License][license-image]][license-url]
 [![Downloads][downloads-image]][downloads-url]
+[![Sponsor the author][sponsor-image]][sponsor-url]
 
 A simple [tRPC](https://trpc.io) transformer based on [superjson](https://github.com/blitz-js/superjson) with [Decimal.js](https://mikemcl.github.io/decimal.js/) support.
 
@@ -103,3 +104,5 @@ The [ISC License](https://github.com/icflorescu/trpc-transformer/blob/master/LIC
 [license-url]: LICENSE
 [downloads-image]: http://img.shields.io/npm/dm/trpc-transformer.svg?style=flat-square
 [downloads-url]: https://npmjs.org/package/trpc-transformer
+[sponsor-image]: https://img.shields.io/badge/sponsor-violet?style=flat-square
+[sponsor-url]: https://github.com/sponsors/icflorescu
