@@ -43,14 +43,14 @@
   "license": "ISC",
   "dependencies": {
     "decimal.js": "^10.4.3",
-    "superjson": "^1.12.4"
+    "superjson": "^1.13.1"
   },
   "peerDependencies": {
     "decimal.js": "^10.4.3",
     "superjson": "^1.13.1"
   },
   "devDependencies": {
-    "esbuild": "^0.18.16",
+    "esbuild": "^0.18.17",
     "typescript": "^5.1.6"
   }
 }
