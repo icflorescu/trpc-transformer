@@ -5,7 +5,7 @@
 [![Downloads][downloads-image]][downloads-url]
 [![Sponsor the author][sponsor-image]][sponsor-url]
 
-A simple [tRPC](https://trpc.io) transformer based on [superjson](https://github.com/blitz-js/superjson) with [Decimal.js](https://mikemcl.github.io/decimal.js/) support.
+A simple [tRPC](https://trpc.io) transformer combining [superjson](https://github.com/blitz-js/superjson) with [Decimal.js](https://mikemcl.github.io/decimal.js/).
 
 ## Installation
 
@@ -21,13 +21,13 @@ npm i trpc-transformer
 
 ## Usage
 
-1. Add it to your `AppRouter`:
+1. Add it to your `initTRPC`:
 
 ```ts
+import { initTRPC } from '@trpc/server';
 import transformer from 'trpc-transformer';
 
-const appRouter = trpc.router().transformer(transformer);
-// .query(...)
+export const t = initTRPC.create({ transformer });
 ```
 
 2. ...and to your tRPC client:
@@ -35,60 +35,98 @@ const appRouter = trpc.router().transformer(transformer);
 ```ts
 import transformer from 'trpc-transformer';
 
-const client = createTRPCClient<AppRouter>({
-  // [...]
-  transformer,
+const client = trpc.createClient({
+  links: [
+    httpBatchLink({
+      // ...
+      transformer,
+    }),
+  ],
 });
 ```
 
 ## Benefits
 
-Assuming you have `appRouter.ts` on the server-side:
+Assuming you have an `appRouter.ts` like this on the server-side:
 
 ```ts
-import * as trpc from '@trpc/server';
+import { initTRPC } from '@trpc/server';
 import transformer from 'trpc-transformer';
-import * as yup from 'yup';
-import DB from '../lib/your-persistence-layer';
+import prisma from '~/lib/server/prisma';
 
-export const appRouter = trpc
-  .router()
-  .transformer(transformer)
-  .mutation('createUser', {
-    input: yup
-      .object({
-        name: yup.string().min(5).required(),
-        birthDate: yup.date().required(),
-      })
-      .required(),
-    async resolve({ input: { name } }) {
-      const user: {
-        id: number;
-        name: string;
-        createdAt: Date;
-      } = await DB.users.create({ name });
-      return user;
-    },
-  });
+const t = initTRPC.create({ transformer });
+
+export const appRouter = t.router({
+  users: t.procedure.query(() =>
+    prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        createdAt: true,
+        accounts: {
+          select: { iban: true, balance: true },
+        },
+      },
+    })
+  )
+});
 
 export type AppRouter = typeof appRouter;
 ```
 
-...then, on the client you'll have your data **correctly** serialized/deserialized:
+...then, you'll have your data **correctly** serialized/deserialized on the client-side:
+
+```tsx
+import Decimal from 'decimal.js';
+import { trpc } from '~/lib/client/trpc';
+
+const usersQuery = trpc.users.useQuery();
+
+console.log('Account createdAt is Date:', usersQuery.data?.[0].createdAt instanceof Date); // 👈 true
+console.log('Account balance is Decimal.js:', usersQuery.data?.[0].accounts[0].balance instanceof Decimal); // 👈 true
+```
+
+> [NOTE]
+> The above example assumes a [Next.js](https://nextjs.org) project with a `lib/client/trpc.ts` file like this:
 
 ```ts
-import * as trpc from '@trpc/client';
-import transformer from 'trpc-transformer';
-import type { Router } from '../appRouter.ts';
-
-const client = trpc.createTRPCClient<Router>({ url: '/trpc', transformer });
-// ...
-const user = await client.mutation('createUser', {
-  name: 'John Doe',
-  birthDate: new Date('1980-06-25'),
-});
-console.log(user.createdAt instanceof Date); // true
+import { createTRPCReact } from '@trpc/react-query';
+import type { AppRouter } from 'swapp.ro.server';
+export const trpc = createTRPCReact<AppRouter>();
 ```
+
+...and a `layout.tsx` file like this:
+
+```tsx
+'use client';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { httpBatchLink } from '@trpc/client';
+import { useState } from 'react';
+import transformer from 'trpc-transformer';
+import { trpc } from '~/lib/client/trpc';
+
+export default function DynamicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const [queryClient] = useState(() => new QueryClient());
+  const [trpcClient] = useState(() =>
+    trpc.createClient({
+      links: [
+        httpBatchLink({
+          url: 'your api url',
+          transformer,
+        }),
+      ],
+    })
+  );
+
+  return (
+    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    </trpc.Provider>
+  );
+}
+```
+
 
 ## Learn more
 
