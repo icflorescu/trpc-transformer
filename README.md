@@ -86,7 +86,7 @@ console.log('Account createdAt is Date:', usersQuery.data?.[0].createdAt instanc
 console.log('Account balance is Decimal.js:', usersQuery.data?.[0].accounts[0].balance instanceof Decimal); // 👈 true
 ```
 
-> [NOTE]
+> [!NOTE]
 > The above example assumes a [Next.js](https://nextjs.org) project with a `lib/client/trpc.ts` file like this:
 
 ```ts
