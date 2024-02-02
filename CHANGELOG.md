@@ -1,3 +1,6 @@
+#### 3.2.0
+* Add exports to package.json.
+
 #### 2.2.0
 * Switch to esbuild.
 
