@@ -1,36 +1,43 @@
 {
   "name": "trpc-transformer",
-  "version": "3.2.2",
+  "version": "4.0.0",
   "description": "Simple tRPC transformer based on superjson with Decimal.js support",
   "repository": "icflorescu/trpc-transformer",
   "bugs": {
     "url": "https://github.com/icflorescu/trpc-transformer/issues"
   },
   "type": "module",
-  "source": "src/index.ts",
   "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": {
         "types": "./dist/index.d.ts",
-        "default": "./dist/index.mjs"
+        "default": "./dist/index.js"
       },
       "require": {
-        "types": "./dist/index.d.ts",
+        "types": "./dist/index.d.cts",
         "default": "./dist/index.cjs"
       }
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",
     "README.md",
     "LICENSE"
   ],
+  "engines": {
+    "node": ">=22.12"
+  },
   "scripts": {
-    "build": "rm -rf dist && NODE_NO_WARNINGS=1 node build.mjs && tsc --emitDeclarationOnly",
-    "test": "tsc --noEmit"
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check",
+    "format": "biome check --write",
+    "test": "npm run build && node --test 'test/*.test.*'",
+    "prepublishOnly": "npm run lint && npm run typecheck && npm test"
   },
   "keywords": [
     "trpc",
@@ -54,16 +61,15 @@
     "url": "https://github.com/sponsors/icflorescu"
   },
   "license": "ISC",
-  "dependencies": {
-    "decimal.js": "^10.4.3",
-    "superjson": "^2.2.1"
-  },
   "peerDependencies": {
-    "decimal.js": "^10.4.3",
-    "superjson": "^2.2.1"
+    "decimal.js": "^10.6.0",
+    "superjson": "^2.2.6"
   },
   "devDependencies": {
-    "esbuild": "^0.20.2",
-    "typescript": "^5.4.5"
+    "@biomejs/biome": "^2.6.7",
+    "decimal.js": "^10.6.0",
+    "superjson": "^2.2.6",
+    "tsdown": "^0.23.7",
+    "typescript": "^7.0.2"
   }
 }

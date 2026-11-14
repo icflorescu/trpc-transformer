@@ -7,8 +7,8 @@ SuperJSON.registerCustom<Decimal, string>(
     serialize: (v) => v.toJSON(),
     deserialize: (v) => new Decimal(v),
   },
-  'decimal.js'
+  'decimal.js',
 );
 
 export default SuperJSON;
-export { serialize, deserialize, stringify, parse };
+export { deserialize, parse, serialize, stringify };
