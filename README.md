@@ -10,14 +10,10 @@ A simple [tRPC](https://trpc.io) transformer combining [superjson](https://githu
 ## Installation
 
 ```bash
-yarn add trpc-transformer
+npm i trpc-transformer superjson decimal.js
 ```
 
-or
-
-```bash
-npm i trpc-transformer
-```
+`superjson` and `decimal.js` are peer dependencies, so your app and the transformer share the same `Decimal` class (and `instanceof Decimal` keeps working on the client).
 
 ## Usage
 
@@ -33,15 +29,12 @@ export const t = initTRPC.create({ transformer });
 2. ...and to your tRPC client:
 
 ```ts
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import transformer from 'trpc-transformer';
+import type { AppRouter } from '~/server/appRouter';
 
-const client = trpc.createClient({
-  links: [
-    httpBatchLink({
-      // ...
-      transformer,
-    }),
-  ],
+const client = createTRPCClient<AppRouter>({
+  links: [httpBatchLink({ url: '/api/trpc', transformer })],
 });
 ```
 
@@ -67,66 +60,79 @@ export const appRouter = t.router({
           select: { iban: true, balance: true },
         },
       },
-    })
-  )
+    }),
+  ),
 });
 
 export type AppRouter = typeof appRouter;
 ```
 
-...then, you'll have your data **correctly** serialized/deserialized on the client-side:
+...then, you'll have your data **correctly** serialized/deserialized on the client-side, with matching types:
 
 ```tsx
+'use client';
+
+import { useQuery } from '@tanstack/react-query';
 import Decimal from 'decimal.js';
-import { trpc } from '~/lib/client/trpc';
+import { useTRPC } from '~/lib/client/trpc';
 
-const usersQuery = trpc.users.useQuery();
+export function Users() {
+  const trpc = useTRPC();
+  const usersQuery = useQuery(trpc.users.queryOptions());
 
-console.log('Account createdAt is Date:', usersQuery.data?.[0].createdAt instanceof Date); // 👈 true
-console.log('Account balance is Decimal.js:', usersQuery.data?.[0].accounts[0].balance instanceof Decimal); // 👈 true
+  console.log(usersQuery.data?.[0].createdAt instanceof Date); // 👈 true
+  console.log(usersQuery.data?.[0].accounts[0].balance instanceof Decimal); // 👈 true
+
+  // ...
+}
 ```
 
 > [!NOTE]
-> The above example assumes a [Next.js](https://nextjs.org) project with a `lib/client/trpc.ts` file like this:
+> The above example assumes a [Next.js](https://nextjs.org) project using [tRPC v11 with TanStack React Query](https://trpc.io/docs/client/tanstack-react-query/setup), with a `lib/client/trpc.ts` file like this:
 
 ```ts
-import { createTRPCReact } from '@trpc/react-query';
-import type { AppRouter } from 'swapp.ro.server';
-export const trpc = createTRPCReact<AppRouter>();
+import { createTRPCContext } from '@trpc/tanstack-react-query';
+import type { AppRouter } from '~/server/appRouter';
+
+export const { TRPCProvider, useTRPC } = createTRPCContext<AppRouter>();
 ```
 
-...and a `layout.tsx` file like this:
+...and a `Providers.tsx` component like this, wrapping your app in `layout.tsx`:
 
 ```tsx
 'use client';
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
+import { createTRPCClient, httpBatchLink } from '@trpc/client';
 import { useState } from 'react';
 import transformer from 'trpc-transformer';
-import { trpc } from '~/lib/client/trpc';
+import { TRPCProvider } from '~/lib/client/trpc';
+import type { AppRouter } from '~/server/appRouter';
 
-export default function DynamicLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
-    trpc.createClient({
-      links: [
-        httpBatchLink({
-          url: 'your api url',
-          transformer,
-        }),
-      ],
-    })
+    createTRPCClient<AppRouter>({
+      links: [httpBatchLink({ url: '/api/trpc', transformer })],
+    }),
   );
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </trpc.Provider>
+    <QueryClientProvider client={queryClient}>
+      <TRPCProvider trpcClient={trpcClient} queryClient={queryClient}>
+        {children}
+      </TRPCProvider>
+    </QueryClientProvider>
   );
 }
 ```
 
+## Requirements
+
+Node.js 22.12+ (or any modern bundler). `superjson` is ESM-only, so the CommonJS build relies on Node's `require(esm)` support.
+
+> [!WARNING]
+> Importing `trpc-transformer` registers Decimal.js support on superjson's shared default instance. If a single process loads **both** the ESM and the CommonJS builds (e.g. a mix of `import` and `require` in a Node.js server), the last one loaded wins, and deserialized values will be instances of _its_ copy of `Decimal` — so `instanceof Decimal` may fail in code using the other copy. Stick to one module format per process to avoid this.
 
 ## Learn more
 
@@ -134,13 +140,13 @@ See [trpc.io/docs/data-transformers](https://trpc.io/docs/data-transformers) and
 
 ## License
 
-The [ISC License](https://github.com/icflorescu/trpc-transformer/blob/master/LICENSE).
+The [ISC License](https://github.com/icflorescu/trpc-transformer/blob/main/LICENSE).
 
 [npm-image]: https://img.shields.io/npm/v/trpc-transformer.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/trpc-transformer
-[license-image]: http://img.shields.io/npm/l/trpc-transformer.svg?style=flat-square
+[npm-url]: https://www.npmjs.com/package/trpc-transformer
+[license-image]: https://img.shields.io/npm/l/trpc-transformer.svg?style=flat-square
 [license-url]: LICENSE
-[downloads-image]: http://img.shields.io/npm/dm/trpc-transformer.svg?style=flat-square
-[downloads-url]: https://npmjs.org/package/trpc-transformer
+[downloads-image]: https://img.shields.io/npm/dm/trpc-transformer.svg?style=flat-square
+[downloads-url]: https://www.npmjs.com/package/trpc-transformer
 [sponsor-image]: https://img.shields.io/badge/sponsor-violet?style=flat-square
 [sponsor-url]: https://github.com/sponsors/icflorescu
